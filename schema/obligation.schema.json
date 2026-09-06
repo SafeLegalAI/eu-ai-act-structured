@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EU AI Act obligation",
+  "description": "One row per distinct obligation, prohibition, right or institutional duty in Regulation (EU) 2024/1689, coded from the article text in data/articles.jsonl. The quote is the Regulation's words; everything else is SafeLegalAI's coding and says so.",
+  "type": "object",
+  "required": ["obligation_id", "article", "paragraph", "actor", "obligation_type", "risk_tier", "summary", "quote", "applies_from", "applies_from_basis", "legal_practice_relevance", "url"],
+  "properties": {
+    "obligation_id": { "type": "string", "pattern": "^art-\\d+-[0-9a-z]+(-[a-z0-9]+)*$", "description": "art-<article>-<paragraph>[-<point>][-<n>] e.g. art-26-6, art-5-1-a, art-4-0 for unnumbered" },
+    "article": { "type": "integer", "minimum": 1, "maximum": 113 },
+    "paragraph": { "type": ["integer", "null"] },
+    "point": { "type": ["string", "null"] },
+    "actor": { "type": "array", "minItems": 1, "items": { "enum": ["provider", "deployer", "importer", "distributor", "authorised-representative", "gpai-provider", "gpai-provider-systemic-risk", "notified-body", "notifying-authority", "market-surveillance-authority", "national-competent-authority", "member-state", "commission", "ai-office", "ai-board", "scientific-panel", "advisory-forum", "operator-any", "natural-person", "public-authority-deployer", "downstream-provider", "product-manufacturer", "union-institution", "other"] } },
+    "obligation_type": { "enum": ["prohibition", "requirement", "transparency", "information-to-persons", "documentation", "record-keeping", "registration", "conformity-assessment", "quality-management", "risk-management", "human-oversight", "data-governance", "monitoring", "incident-reporting", "cooperation-with-authorities", "governance-institutional", "enforcement-power", "penalty", "right-of-person", "scope-or-definition", "derogation-or-exemption", "delegated-or-implementing-act", "support-measure", "amendment-of-other-act", "entry-into-force"] },
+    "risk_tier": { "enum": ["prohibited-practice", "high-risk", "transparency-risk", "gpai", "gpai-systemic-risk", "all-ai-systems", "not-tier-specific"] },
+    "summary": { "type": "string", "minLength": 40, "maxLength": 320, "description": "one or two sentences, SafeLegalAI's plain-English coding of what must (not) be done, by whom, when — no advice" },
+    "quote": { "type": "string", "maxLength": 420, "description": "the operative words of the Regulation, verbatim, ≤ 60 words, in quotation marks" },
+    "applies_from": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$", "description": "date the obligation applies, from Article 113 as amended by any act in force on the research date" },
+    "applies_from_basis": { "type": "string", "description": "e.g. 'Art. 113(a)' · 'Art. 113 second subparagraph (general application)' · 'Art. 113(c)' · '<amending regulation> Art. N' when a later act changed the date" },
+    "transitional_note": { "type": ["string", "null"], "description": "Art. 111 grandfathering or other transitional treatment, if any" },
+    "penalty_basis": { "type": ["string", "null"], "description": "'Art. 99(3)' (prohibitions, up to €35m/7%), 'Art. 99(4)' (most operator obligations, €15m/3%), 'Art. 99(5)' (incorrect information, €7.5m/1%), 'Art. 101' (GPAI providers), or null" },
+    "legal_practice_relevance": { "enum": ["high", "medium", "low", "none"], "description": "how directly this bites a law firm, chambers, in-house team or court that deploys AI, or a legal-AI vendor as provider" },
+    "legal_practice_note": { "type": ["string", "null"], "maxLength": 400, "description": "descriptive only: which legal-practice actor it reaches and why (e.g. 'a firm using a high-risk system is a deployer'); never 'you should'" },
+    "cross_references": { "type": "array", "items": { "type": "string" }, "description": "articles/annexes/recitals this row depends on, e.g. ['Art. 6', 'Annex III', 'Recital 61']" },
+    "url": { "type": "string", "format": "uri" }
+  }
+}
