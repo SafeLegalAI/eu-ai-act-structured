@@ -1,0 +1,7 @@
+[project]
+name = "eu-ai-act-structured"
+version = "0.1.0"
+description = "The EU AI Act (Regulation (EU) 2024/1689) as structured data — SafeLegalAI"
+requires-python = ">=3.12"
+license = { text = "Apache-2.0" }
+dependencies = ["lxml>=5", "httpx>=0.27", "pyarrow>=17", "huggingface_hub>=0.25"]

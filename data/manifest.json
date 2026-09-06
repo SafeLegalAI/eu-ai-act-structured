@@ -1,0 +1,16 @@
+{
+  "regulation": "Regulation (EU) 2024/1689 (Artificial Intelligence Act)",
+  "celex": "32024R1689",
+  "source": "http://publications.europa.eu/resource/celex/32024R1689",
+  "source_format": "application/xhtml+xml (Cellar, Publications Office of the European Union)",
+  "eli": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
+  "source_sha256": "8f0b656302f9864cc87e040c371f209a9d65ae1a6cecc25ca5eb737e872d721a",
+  "parsed": "2026-09-05",
+  "counts": {
+    "articles": 113,
+    "recitals": 180,
+    "annexes": 13,
+    "definitions": 68
+  },
+  "reuse": "Commission Decision 2011/833/EU \u2014 attribution: \u00a9 European Union, 1998\u20132026, https://eur-lex.europa.eu"
+}
