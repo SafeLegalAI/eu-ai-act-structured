@@ -1,0 +1,19 @@
+eu-ai-act-structured
+Copyright 2026 Cognesio LLP (publisher of SafeLegalAI, https://safelegalai.com)
+
+Two licences apply, both requiring attribution and both provided WITHOUT WARRANTY:
+
+- Code (everything under pipeline/, scripts/, *.py, *.mjs, *.json schemas): Apache License 2.0 — see LICENSE.
+  Section 7 of that licence disclaims all warranties.
+- Data (everything under data/ and the dataset card): Creative Commons Attribution 4.0 International (CC BY 4.0) — see LICENSE-DATA.
+  Section 5 of that licence disclaims all warranties and limits liability.
+
+Attribution for the data: "SafeLegalAI (safelegalai.com), published by Cognesio LLP — eu-ai-act-structured, CC BY 4.0" with a link to
+https://github.com/SafeLegalAI/eu-ai-act-structured or the canonical page on safelegalai.com given in the dataset card.
+
+Underlying source materials keep their own status. Court orders, opinions and rules of United States courts are public
+domain (17 U.S.C. § 105; Georgia v. Public.Resource.Org, Inc., 590 U.S. ___ (2020)). Texts of European Union legislation are
+reused under Commission Decision 2011/833/EU on the reuse of Commission documents (attribution: © European Union, 1998–2026,
+https://eur-lex.europa.eu). Facts recorded from vendor web pages are facts (Feist Publications, Inc. v. Rural Telephone
+Service Co., 499 U.S. 340 (1991)); short quotations are used for identification only and every row links to the page that
+states the fact. Nothing here is legal advice; the linked official documents are the record.
