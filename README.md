@@ -18,6 +18,14 @@ configs:
     data_files:
       - split: train
         path: data/articles.parquet
+  - config_name: articles_as_enacted
+    data_files:
+      - split: train
+        path: data/articles_as_enacted.parquet
+  - config_name: amendments
+    data_files:
+      - split: train
+        path: data/amendments.parquet
   - config_name: recitals
     data_files:
       - split: train
@@ -26,59 +34,85 @@ configs:
     data_files:
       - split: train
         path: data/annexes.parquet
+  - config_name: annexes_as_enacted
+    data_files:
+      - split: train
+        path: data/annexes_as_enacted.parquet
   - config_name: definitions
     data_files:
       - split: train
         path: data/definitions.parquet
+  - config_name: definitions_as_enacted
+    data_files:
+      - split: train
+        path: data/definitions_as_enacted.parquet
   - config_name: obligations
     default: true
     data_files:
       - split: train
         path: data/obligations.parquet
+  - config_name: milestones
+    data_files:
+      - split: train
+        path: data/milestones.parquet
+  - config_name: authorities
+    data_files:
+      - split: train
+        path: data/authorities.parquet
+  - config_name: penalties
+    data_files:
+      - split: train
+        path: data/penalties.parquet
 ---
 
 # EU AI Act, structured
 
-**Regulation (EU) 2024/1689 (the Artificial Intelligence Act) as tables: every article, recital, annex and definition, 503 obligations coded by actor, risk tier, application date and penalty basis, plus milestones, national competent authorities and fine tiers.**
+**Regulation (EU) 2024/1689 (the Artificial Intelligence Act) as tables: every article, recital, annex and definition, 677 obligations coded by actor, risk tier, application date and penalty basis, plus milestones, national competent authorities and fine tiers.**
 
-Built 2026-09-06 by [SafeLegalAI](https://safelegalai.com) (Cognesio LLP) from the official English text served by the Publications Office of the European Union (Cellar, CELEX 32024R1689). Canonical pages: [safelegalai.com/topics/eu-ai-act](https://safelegalai.com/topics/eu-ai-act) · pipeline and issues: [https://github.com/SafeLegalAI/eu-ai-act-structured](https://github.com/SafeLegalAI/eu-ai-act-structured).
+Built 2026-09-06 by [SafeLegalAI](https://safelegalai.com) (Cognesio LLP) from the official English texts served by the Publications Office of the European Union (Cellar): the **consolidated text as of 27 July 2026** (CELEX 02024R1689-20260727 — the Act as amended by Regulation (EU) 2026/1744, the *Digital Omnibus on AI*, in force 27 July 2026) for `articles`, `definitions`, `annexes` and the coding; the text as enacted (CELEX 32024R1689) in the `*_as_enacted` tables and for `recitals`; and a per-article diff in `amendments`. Canonical pages: [safelegalai.com/topics/eu-ai-act](https://safelegalai.com/topics/eu-ai-act) · pipeline and issues: [https://github.com/SafeLegalAI/eu-ai-act-structured](https://github.com/SafeLegalAI/eu-ai-act-structured).
 
 ## Tables
 
 | config | rows | what a row is |
 |---|---|---|
-| `articles` | 113 | one article: number, title, chapter, section, numbered paragraphs with lettered points (JSON), flattened text, EUR-Lex anchor |
+| `articles` | 119 | one article of the **consolidated** text (27 July 2026): number (string for inserted articles such as `4a`, `75a`), title, chapter, section, numbered paragraphs with lettered points (JSON), flattened text, EUR-Lex anchor |
+| `articles_as_enacted` | 113 | the same for the text as enacted in 2024 |
+| `amendments` | 72 | one amended or inserted article: words before/after, a word-level diff, the amending act and its entry into force |
 | `recitals` | 180 | one recital |
-| `annexes` | 13 | one annex: title and text |
-| `definitions` | 68 | one Article 3 definition: number, term, definition |
-| `obligations` | 503 | **one distinct obligation, prohibition, right or institutional duty**, coded by SafeLegalAI from the article text: `actor[]`, `obligation_type`, `risk_tier`, `applies_from` (+ `applies_from_basis`), `penalty_basis`, `legal_practice_relevance` (+ note), `cross_references[]`, and the Regulation's operative words in `quote` (verbatim, ≤ 60 words; every quote is machine-checked against the parsed text) |
-| `milestones` | 0 | one dated milestone: entry into force, staged application, transitional dates, Commission deadlines — with legislative status (`past`, `scheduled`, `proposed`, `deferred`) and official source |
-| `authorities` | 0 | one national competent authority under Article 70, per Member State, with role and designation status |
-| `penalties` | 0 | one fine tier from Articles 99–101: conduct, maximum fixed amount, turnover percentage, rule |
+| `annexes` | 14 | one annex: title and text |
+| `definitions` | 70 | one Article 3 definition: number, term, definition |
+| `obligations` | 677 | **one distinct obligation, prohibition, right or institutional duty**, coded by SafeLegalAI from the article text: `actor[]`, `obligation_type`, `risk_tier`, `applies_from` (+ `applies_from_basis`), `penalty_basis`, `legal_practice_relevance` (+ note), `cross_references[]`, and the Regulation's operative words in `quote` (verbatim, ≤ 60 words; every quote is machine-checked against the parsed text) |
+| `milestones` | 43 | one dated milestone: entry into force, staged application, transitional dates, Commission deadlines — with legislative status (`past`, `scheduled`, `proposed`, `deferred`) and official source |
+| `authorities` | 29 | one national competent authority under Article 70, per Member State, with role and designation status |
+| `penalties` | 9 | one fine tier from Articles 99–101: conduct, maximum fixed amount, turnover percentage, rule |
 
 ### Obligations by risk tier
 
 | `risk_tier` | rows |
 |---|---|
-| `high-risk` | 317 |
-| `not-tier-specific` | 97 |
-| `gpai` | 36 |
-| `gpai-systemic-risk` | 22 |
-| `prohibited-practice` | 17 |
-| `all-ai-systems` | 7 |
-| `transparency-risk` | 7 |
+| `high-risk` | 352 |
+| `not-tier-specific` | 205 |
+| `gpai` | 40 |
+| `gpai-systemic-risk` | 27 |
+| `prohibited-practice` | 24 |
+| `all-ai-systems` | 21 |
+| `transparency-risk` | 8 |
 
-### Obligations by application date (Article 113 as written; see `milestones` for any deferral)
+### Obligations by application date (Article 113 **as amended** by Regulation (EU) 2026/1744; `applies_from_as_enacted` keeps the 2024 date)
 
 | `applies_from` | rows |
 |---|---|
 | 2024-08-01 | 1 |
-| 2025-02-02 | 31 |
-| 2025-08-02 | 124 |
-| 2026-08-02 | 344 |
-| 2027-08-02 | 3 |
+| 2025-02-02 | 45 |
+| 2025-08-02 | 157 |
+| 2026-07-27 | 21 |
+| 2026-08-02 | 296 |
+| 2026-12-02 | 6 |
+| 2027-08-02 | 1 |
+| 2027-12-02 | 143 |
+| 2028-08-02 | 7 |
 
-146 rows are coded `legal_practice_relevance: high` — the provisions that reach a law firm, chambers, in-house team or court deploying AI, a court as public-authority deployer, or a legal-AI vendor as provider (including Annex III point 8, AI systems intended to assist a judicial authority).
+198 rows are coded `legal_practice_relevance: high` — the provisions that reach a law firm, chambers, in-house team or court deploying AI, a court as public-authority deployer, or a legal-AI vendor as provider (including Annex III point 8, AI systems intended to assist a judicial authority).
 
 ## What is the Regulation's and what is ours
 
@@ -114,26 +148,30 @@ Provided "as is", without warranty of any kind (CC BY 4.0 §5; Apache-2.0 §7). 
 ```json
 {
   "regulation": "Regulation (EU) 2024/1689 (Artificial Intelligence Act)",
-  "celex": "32024R1689",
-  "source": "http://publications.europa.eu/resource/celex/32024R1689",
+  "celex": "02024R1689-20260727",
+  "source": "http://publications.europa.eu/resource/celex/02024R1689-20260727",
   "source_format": "application/xhtml+xml (Cellar, Publications Office of the European Union)",
   "eli": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
-  "source_sha256": "8f0b656302f9864cc87e040c371f209a9d65ae1a6cecc25ca5eb737e872d721a",
-  "parsed": "2026-09-05",
+  "source_sha256": "5e7719f77e8a606b257dc25958ee3222c4383300a5a34270a5b850a2ce8b8715",
+  "parsed": "2026-09-06",
   "counts": {
-    "articles": 113,
+    "articles": 119,
+    "articles_as_enacted": 113,
+    "amendments": 72,
     "recitals": 180,
-    "annexes": 13,
-    "definitions": 68,
-    "obligations": 503,
-    "milestones": 0,
-    "authorities": 0,
-    "penalties": 0
+    "annexes": 14,
+    "annexes_as_enacted": 13,
+    "definitions": 70,
+    "definitions_as_enacted": 68,
+    "obligations": 677,
+    "milestones": 43,
+    "authorities": 29,
+    "penalties": 9
   },
   "reuse": "Commission Decision 2011/833/EU \u2014 attribution: \u00a9 European Union, 1998\u20132026, https://eur-lex.europa.eu",
   "version": "0.1.0",
   "built": "2026-09-06",
-  "contentSha256": "dc01ca740f279ecfac219c3572be5d0ae2001dd8235b1543378eb7c4b19f9ef8",
+  "contentSha256": "b4079940bf79adea9b61d04b33e257f1e8b5ad4d206a4f978ad97aaf802b430f",
   "canonical": "https://safelegalai.com/topics/eu-ai-act",
   "repository": "https://github.com/SafeLegalAI/eu-ai-act-structured",
   "license_text": "Commission Decision 2011/833/EU (\u00a9 European Union)",

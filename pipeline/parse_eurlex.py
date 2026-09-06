@@ -63,6 +63,8 @@ def parse(path: Path):
         t = el.find(".//div[@class='eli-title']")
         return text_of(t) if t is not None else None
 
+    consolidated = "Consolidated TEXT" in (root.findtext(".//title") or "")
+
     chapters = {}
     for cid, el in by_id.items():
         if re.fullmatch(r"cpt_[IVX]+", cid):
@@ -81,8 +83,13 @@ def parse(path: Path):
 
     # ---- articles
     articles = []
-    for cid, el in sorted(((k, v) for k, v in by_id.items() if re.fullmatch(r"art_\d+", k)), key=lambda kv: int(kv[0].split("_")[1])):
-        n = int(cid.split("_")[1])
+    def art_key(cid):
+        m = re.fullmatch(r"art_(\d+)([a-z]*)", cid)
+        return (int(m.group(1)), m.group(2))
+
+    for cid, el in sorted(((k, v) for k, v in by_id.items() if re.fullmatch(r"art_\d+[a-z]*", k)), key=lambda kv: art_key(kv[0])):
+        n_num, n_suffix = art_key(cid)
+        n = f"{n_num}{n_suffix}"
         title = title_after(el)
         chap_id = container(el, r"cpt_[IVX]+")
         sect_id = container(el, r"cpt_[IVX]+\.sct_\d+")
@@ -95,8 +102,23 @@ def parse(path: Path):
         def collect(node):
             texts, points = [], []
             for ch in node:
-                if ch.tag == "p" and "oj-normal" in (ch.get("class") or ""):
+                cls = ch.get("class") or ""
+                if ch.tag == "p" and "modref" in cls:
+                    continue  # ▼M1 amendment markers (consolidated texts)
+                if ch.tag == "p" and ("oj-normal" in cls or cls.startswith("norm")):
                     texts.append(text_of(ch))
+                elif ch.tag == "div" and "grid-container" in cls:
+                    marker = text_of(ch.find(".//div[@class='list grid-list-column-1']") or ch)
+                    body = ch.find(".//div[@class='grid-list-column-2']")
+                    if body is not None:
+                        points.append({"marker": marker.strip("() "), "text": text_of(body)})
+                elif ch.tag == "div" and cls == "norm inline-element":
+                    t2, p2 = collect(ch)
+                    if not t2 and not p2:
+                        texts.append(text_of(ch))
+                    else:
+                        texts += t2
+                        points += p2
                 elif ch.tag == "table":
                     for tr in ch.iter("tr"):
                         tds = [td for td in tr if td.tag == "td"]
@@ -112,7 +134,19 @@ def parse(path: Path):
 
         paragraphs = []
         para_divs = [c for c in el if c.tag == "div" and re.fullmatch(r"\d{3}\.\d{3}", c.get("id") or "")]
-        if para_divs:
+        norm_divs = [c for c in el if c.tag == "div" and (c.get("class") or "") == "norm"]
+        if consolidated and norm_divs:
+            for child in norm_divs:
+                marker = child.find("span[@class='no-parag']")
+                num = None
+                if marker is not None:
+                    m = re.match(r"^(\d+[a-z]?)\.", text_of(marker))
+                    num = m.group(1) if m else None
+                texts, points = collect(child)
+                if not texts and not points:
+                    continue
+                paragraphs.append({"number": int(num) if num and num.isdigit() else num, "text": texts[0] if texts else "", "points": points, "tail": " ".join(texts[1:])})
+        elif para_divs:
             for child in para_divs:
                 texts, points = collect(child)
                 if not texts and not points:
@@ -129,7 +163,7 @@ def parse(path: Path):
         )
         articles.append(
             {
-                "article": n,
+                "article": n_num if not n_suffix else n,
                 "id": f"art_{n}",
                 "title": title,
                 "chapter": chapter.get("number"),
@@ -162,12 +196,12 @@ def parse(path: Path):
             head = el.find(".//p[@class='oj-doc-ti']")
             title_el = el.find(".//p[@class='oj-ti-annex']") if el.find(".//p[@class='oj-ti-annex']") is not None else None
             # the annex title is usually the second 'oj-doc-ti' p; take all doc-ti paragraphs
-            titles = [text_of(p) for p in el.iter(f"{XHTML}p") if (p.get("class") or "") in ("oj-doc-ti", "oj-ti-annex")]
+            titles = [text_of(p) for p in el.iter(f"{XHTML}p") if (p.get("class") or "") in ("oj-doc-ti", "oj-ti-annex", "title-annex-1", "title-annex-2")]
             # annex bodies use oj-normal paragraphs, headed sub-sections, and (Annex VI) inline enumerations
             body = []
             for node in el.iter():
                 cls = node.get("class") or ""
-                if node.tag == "p" and ("oj-normal" in cls or "oj-ti-grseq-1" in cls):
+                if node.tag == "p" and ("oj-normal" in cls or "oj-ti-grseq-1" in cls or cls == "norm" or "title-gr-seq" in cls):
                     body.append(text_of(node))
                 elif node.tag == "div" and "oj-enumeration-spacing" in cls:
                     body.append(text_of(node))

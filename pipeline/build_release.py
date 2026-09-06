@@ -11,6 +11,7 @@ import csv
 import hashlib
 import json
 import os
+import re
 from datetime import date
 from pathlib import Path
 
@@ -25,7 +26,7 @@ HF_REPO = "eu-ai-act-structured"
 SITE = "https://safelegalai.com"
 GH = "https://github.com/SafeLegalAI/eu-ai-act-structured"
 
-TABLES = ["articles", "recitals", "annexes", "definitions", "obligations", "milestones", "authorities", "penalties"]
+TABLES = ["articles", "articles_as_enacted", "amendments", "recitals", "annexes", "annexes_as_enacted", "definitions", "definitions_as_enacted", "obligations", "milestones", "authorities", "penalties"]
 
 
 def read_jsonl(p: Path):
@@ -58,17 +59,42 @@ def write_parquet(p: Path, rows):
         return
     cols = list(dict.fromkeys(k for r in rows for k in r))
     # nested structures (paragraphs, points) go in as JSON strings so the schema stays flat and stable
-    simple = [{c: (json.dumps(r.get(c), ensure_ascii=False) if isinstance(r.get(c), (list, dict)) else r.get(c)) for c in cols} for r in rows]
+    # mixed-type columns (article: 4 vs "4a"; paragraph: 1 vs "1a") become strings so the Arrow schema is stable
+    mixed = {c for c in cols if len({type(r.get(c)).__name__ for r in rows if r.get(c) is not None}) > 1}
+    simple = [{c: (json.dumps(r.get(c), ensure_ascii=False) if isinstance(r.get(c), (list, dict)) else (str(r.get(c)) if c in mixed and r.get(c) is not None else r.get(c))) for c in cols} for r in rows]
     pq.write_table(pa.Table.from_pylist(simple), p, compression="zstd")
 
 
+def art_key(a):
+    m = re.match(r"(\d+)([a-z]*)", str(a))
+    return (int(m.group(1)), m.group(2)) if m else (0, str(a))
+
+
 def merge_obligations():
-    rows = []
+    """Original three passes (coded from the enacted text) overlaid by the re-coding passes
+    (coded from the consolidated 2026-07-27 text): any article present in a recode file
+    replaces every original row for that article. Dates on surviving original rows were
+    reconciled with Art. 113 as amended by pipeline/reconcile_dates.py (kept in data/)."""
+    base = []
     for f in sorted(WORK.glob("agents/obligations-*.jsonl")):
-        rows += read_jsonl(f)
+        base += read_jsonl(f)
+    # prefer the reconciled copy already in data/ when it exists (it carries applies_from_as_enacted etc.)
+    existing = {r["obligation_id"]: r for r in read_jsonl(DATA / "obligations.jsonl")}
+    base = [existing.get(r["obligation_id"], r) for r in base]
+    for r in base:
+        r.setdefault("coded_from", "enacted-2024")
+        r.setdefault("applies_from_as_enacted", r["applies_from"])
+        r.setdefault("applies_from_basis_as_enacted", r["applies_from_basis"])
+        r.setdefault("text_amended_since_coding", False)
+    recoded = []
+    for f in sorted(WORK.glob("agents/recode-*.jsonl")):
+        recoded += read_jsonl(f)
+    replaced = {str(r["article"]) for r in recoded}
+    rows = [r for r in base if str(r["article"]) not in replaced] + recoded
     for r in rows:
         r.pop("_src", None)
-    rows.sort(key=lambda r: (r["article"], r.get("paragraph") or 0, str(r.get("point") or ""), r["obligation_id"]))
+        r["text_amended_since_coding"] = bool(r.get("text_amended_since_coding")) and str(r["article"]) not in replaced
+    rows.sort(key=lambda r: (art_key(r["article"]), str(r.get("paragraph") or 0).rjust(4, "0"), str(r.get("point") or ""), r["obligation_id"]))
     write_jsonl(DATA / "obligations.jsonl", rows)
     return rows
 
@@ -109,13 +135,15 @@ configs:
 
 **Regulation (EU) 2024/1689 (the Artificial Intelligence Act) as tables: every article, recital, annex and definition, {counts['obligations']} obligations coded by actor, risk tier, application date and penalty basis, plus milestones, national competent authorities and fine tiers.**
 
-Built {today} by [SafeLegalAI]({SITE}) (Cognesio LLP) from the official English text served by the Publications Office of the European Union (Cellar, CELEX {manifest['celex']}). Canonical pages: [{SITE.removeprefix("https://")}/topics/eu-ai-act]({SITE}/topics/eu-ai-act) · pipeline and issues: [{GH}]({GH}).
+Built {today} by [SafeLegalAI]({SITE}) (Cognesio LLP) from the official English texts served by the Publications Office of the European Union (Cellar): the **consolidated text as of 27 July 2026** (CELEX 02024R1689-20260727 — the Act as amended by Regulation (EU) 2026/1744, the *Digital Omnibus on AI*, in force 27 July 2026) for `articles`, `definitions`, `annexes` and the coding; the text as enacted (CELEX 32024R1689) in the `*_as_enacted` tables and for `recitals`; and a per-article diff in `amendments`. Canonical pages: [{SITE.removeprefix("https://")}/topics/eu-ai-act]({SITE}/topics/eu-ai-act) · pipeline and issues: [{GH}]({GH}).
 
 ## Tables
 
 | config | rows | what a row is |
 |---|---|---|
-| `articles` | {counts['articles']} | one article: number, title, chapter, section, numbered paragraphs with lettered points (JSON), flattened text, EUR-Lex anchor |
+| `articles` | {counts['articles']} | one article of the **consolidated** text (27 July 2026): number (string for inserted articles such as `4a`, `75a`), title, chapter, section, numbered paragraphs with lettered points (JSON), flattened text, EUR-Lex anchor |
+| `articles_as_enacted` | {counts.get('articles_as_enacted', 0)} | the same for the text as enacted in 2024 |
+| `amendments` | {counts.get('amendments', 0)} | one amended or inserted article: words before/after, a word-level diff, the amending act and its entry into force |
 | `recitals` | {counts['recitals']} | one recital |
 | `annexes` | {counts['annexes']} | one annex: title and text |
 | `definitions` | {counts['definitions']} | one Article 3 definition: number, term, definition |
@@ -130,7 +158,7 @@ Built {today} by [SafeLegalAI]({SITE}) (Cognesio LLP) from the official English 
 |---|---|
 {tiers}
 
-### Obligations by application date (Article 113 as written; see `milestones` for any deferral)
+### Obligations by application date (Article 113 **as amended** by Regulation (EU) 2026/1744; `applies_from_as_enacted` keeps the 2024 date)
 
 | `applies_from` | rows |
 |---|---|
