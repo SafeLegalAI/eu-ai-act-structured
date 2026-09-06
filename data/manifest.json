@@ -10,7 +10,18 @@
     "articles": 113,
     "recitals": 180,
     "annexes": 13,
-    "definitions": 68
+    "definitions": 68,
+    "obligations": 503,
+    "milestones": 0,
+    "authorities": 0,
+    "penalties": 0
   },
-  "reuse": "Commission Decision 2011/833/EU \u2014 attribution: \u00a9 European Union, 1998\u20132026, https://eur-lex.europa.eu"
+  "reuse": "Commission Decision 2011/833/EU \u2014 attribution: \u00a9 European Union, 1998\u20132026, https://eur-lex.europa.eu",
+  "version": "0.1.0",
+  "built": "2026-09-05",
+  "contentSha256": "dc01ca740f279ecfac219c3572be5d0ae2001dd8235b1543378eb7c4b19f9ef8",
+  "canonical": "https://safelegalai.com/topics/eu-ai-act",
+  "repository": "https://github.com/SafeLegalAI/eu-ai-act-structured",
+  "license_text": "Commission Decision 2011/833/EU (\u00a9 European Union)",
+  "license_coding": "CC BY 4.0 (SafeLegalAI, Cognesio LLP)"
 }
