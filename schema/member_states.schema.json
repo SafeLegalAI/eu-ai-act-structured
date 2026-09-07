@@ -1,0 +1,166 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "SafeLegalAI EU AI Act national implementation instrument",
+ "type": "object",
+ "additionalProperties": false,
+ "properties": {
+  "row_id": {
+   "type": "string",
+   "pattern": "^[a-z0-9][a-z0-9-]{3,90}$"
+  },
+  "state": {
+   "type": "string",
+   "pattern": "^[A-Z]{2}$"
+  },
+  "state_name": {
+   "type": "string"
+  },
+  "instrument_type": {
+   "type": "string",
+   "enum": [
+    "implementing-act",
+    "designation-notice",
+    "penalty-law",
+    "sandbox",
+    "deployer-guidance",
+    "omnibus-position",
+    "authority-page"
+   ]
+  },
+  "title_original": {
+   "type": "string",
+   "maxLength": 300
+  },
+  "title_en": {
+   "type": "string",
+   "maxLength": 300
+  },
+  "machine_translation": {
+   "type": "boolean"
+  },
+  "status": {
+   "type": "string",
+   "enum": [
+    "draft",
+    "bill",
+    "adopted",
+    "in-force",
+    "announced",
+    "operational",
+    "designated",
+    "unknown"
+   ]
+  },
+  "date": {
+   "type": [
+    "string",
+    "null"
+   ],
+   "pattern": "^\\d{4}(-\\d{2}(-\\d{2})?)?$"
+  },
+  "authority_role": {
+   "type": "array",
+   "items": {
+    "type": "string",
+    "enum": [
+     "msa",
+     "spoc",
+     "notifying",
+     "fundamental-rights",
+     "sandbox-operator",
+     "none"
+    ]
+   }
+  },
+  "authority_name": {
+   "type": [
+    "string",
+    "null"
+   ],
+   "maxLength": 200
+  },
+  "penalty_note": {
+   "type": [
+    "string",
+    "null"
+   ],
+   "maxLength": 300
+  },
+  "sandbox_note": {
+   "type": [
+    "string",
+    "null"
+   ],
+   "maxLength": 300
+  },
+  "quote_original": {
+   "type": [
+    "string",
+    "null"
+   ],
+   "maxLength": 220,
+   "description": "verbatim, ≤25 words, in quotation marks (longer only if public domain and the field says so)"
+  },
+  "summary": {
+   "type": "string",
+   "minLength": 80,
+   "maxLength": 460
+  },
+  "source_url": {
+   "type": "string",
+   "format": "uri",
+   "description": "primary source (court/regulator/legislature/agency/vendor own site or official API)"
+  },
+  "archive_url": {
+   "type": [
+    "string",
+    "null"
+   ],
+   "description": "web.archive.org snapshot of source_url, or null"
+  },
+  "fetched_at": {
+   "type": "string",
+   "description": "ISO timestamp of the read"
+  },
+  "verification": {
+   "type": "string",
+   "enum": [
+    "fetched-and-read",
+    "page-read-no-document",
+    "link-only",
+    "mirror-read"
+   ],
+   "description": "fetched-and-read = official copy read; mirror-read = the court-authored document was read from a public mirror (e.g. a CC0 database's PDF) and the official URL is pending; page-read-no-document; link-only"
+  },
+  "lead_source": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   },
+   "description": "where we learned the row exists (tracker/news/api/crawl); never a source_url"
+  },
+  "notes": {
+   "type": [
+    "string",
+    "null"
+   ],
+   "maxLength": 600
+  }
+ },
+ "required": [
+  "row_id",
+  "state",
+  "state_name",
+  "instrument_type",
+  "title_original",
+  "title_en",
+  "machine_translation",
+  "status",
+  "authority_role",
+  "summary",
+  "source_url",
+  "fetched_at",
+  "verification",
+  "lead_source"
+ ]
+}

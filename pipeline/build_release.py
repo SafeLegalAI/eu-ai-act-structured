@@ -26,7 +26,7 @@ HF_REPO = "eu-ai-act-structured"
 SITE = "https://safelegalai.com"
 GH = "https://github.com/SafeLegalAI/eu-ai-act-structured"
 
-TABLES = ["articles", "articles_as_enacted", "amendments", "recitals", "annexes", "annexes_as_enacted", "definitions", "definitions_as_enacted", "obligations", "milestones", "authorities", "penalties"]
+TABLES = ["articles", "articles_as_enacted", "amendments", "recitals", "annexes", "annexes_as_enacted", "definitions", "definitions_as_enacted", "obligations", "milestones", "authorities", "penalties", "member_states"]
 
 
 def read_jsonl(p: Path):
@@ -151,6 +151,7 @@ Built {today} by [SafeLegalAI]({SITE}) (Cognesio LLP) from the official English 
 | `milestones` | {counts.get('milestones', 0)} | one dated milestone: entry into force, staged application, transitional dates, Commission deadlines — with legislative status (`past`, `scheduled`, `proposed`, `deferred`) and official source |
 | `authorities` | {counts.get('authorities', 0)} | one national competent authority under Article 70, per Member State, with role and designation status |
 | `penalties` | {counts.get('penalties', 0)} | one fine tier from Articles 99–101: conduct, maximum fixed amount, turnover percentage, rule |
+| `member_states` | {counts.get('member_states', 0)} | **one national implementation instrument** for each of the 27 Member States plus NO/IS/LI/CH/GB: implementing act, authority designation (market surveillance, single point of contact, notifying, fundamental-rights), Article 99 penalty regime, Article 57 sandbox status (deadline 2 August 2027), deployer guidance reaching legal practice, position on the Digital Omnibus — original-language title, English title (flagged when translated by us), status, date, ≤25-word quote, gazette/authority source; a state with nothing verifiable carries one `authority-page` row saying what was checked. Page per state: `{SITE}/regulation/eu-ai-act/<cc>` |
 
 ### Obligations by risk tier
 
@@ -203,12 +204,39 @@ Provided "as is", without warranty of any kind (CC BY 4.0 §5; Apache-2.0 §7). 
 """
 
 
+def merge_member_states():
+    """Validate work/agents/member_states-*.jsonl against schema/member_states.schema.json, dedupe by row_id, sort by state."""
+    import jsonschema
+    schema = json.loads((ROOT / "schema" / "member_states.schema.json").read_text())
+    v = jsonschema.Draft202012Validator(schema)
+    rows, seen, rejected = [], set(), []
+    for f in sorted((ROOT / "work" / "agents").glob("member_states-*.jsonl")):
+        for r in read_jsonl(f):
+            errs = [e.message for e in v.iter_errors(r)]
+            if errs:
+                rejected.append({"file": f.name, "id": r.get("row_id"), "errors": errs[:4]})
+                continue
+            if r["row_id"] in seen:
+                continue
+            seen.add(r["row_id"])
+            rows.append(r)
+    rows.sort(key=lambda r: (r["state_name"], r["instrument_type"], r.get("date") or ""))
+    for r in rows:
+        r["url"] = f"{SITE}/regulation/eu-ai-act/{r['state'].lower()}#{r['row_id']}"
+    if rows:
+        write_jsonl(DATA / "member_states.jsonl", rows)
+    if rejected:
+        (ROOT / "work" / "rejected-member_states.json").write_text(json.dumps(rejected, indent=1))
+    print(f"member_states: {len(rows)} rows, {len(rejected)} rejected")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--push", action="store_true")
     ap.add_argument("--version", default="0.1.0")
     a = ap.parse_args()
     merge_obligations()
+    merge_member_states()
     counts = {}
     for t in TABLES:
         rows = read_jsonl(DATA / f"{t}.jsonl")

@@ -63,13 +63,17 @@ configs:
     data_files:
       - split: train
         path: data/penalties.parquet
+  - config_name: member_states
+    data_files:
+      - split: train
+        path: data/member_states.parquet
 ---
 
 # EU AI Act, structured
 
 **Regulation (EU) 2024/1689 (the Artificial Intelligence Act) as tables: every article, recital, annex and definition, 677 obligations coded by actor, risk tier, application date and penalty basis, plus milestones, national competent authorities and fine tiers.**
 
-Built 2026-09-06 by [SafeLegalAI](https://safelegalai.com) (Cognesio LLP) from the official English texts served by the Publications Office of the European Union (Cellar): the **consolidated text as of 27 July 2026** (CELEX 02024R1689-20260727 — the Act as amended by Regulation (EU) 2026/1744, the *Digital Omnibus on AI*, in force 27 July 2026) for `articles`, `definitions`, `annexes` and the coding; the text as enacted (CELEX 32024R1689) in the `*_as_enacted` tables and for `recitals`; and a per-article diff in `amendments`. Canonical pages: [safelegalai.com/topics/eu-ai-act](https://safelegalai.com/topics/eu-ai-act) · pipeline and issues: [https://github.com/SafeLegalAI/eu-ai-act-structured](https://github.com/SafeLegalAI/eu-ai-act-structured).
+Built 2026-09-07 by [SafeLegalAI](https://safelegalai.com) (Cognesio LLP) from the official English texts served by the Publications Office of the European Union (Cellar): the **consolidated text as of 27 July 2026** (CELEX 02024R1689-20260727 — the Act as amended by Regulation (EU) 2026/1744, the *Digital Omnibus on AI*, in force 27 July 2026) for `articles`, `definitions`, `annexes` and the coding; the text as enacted (CELEX 32024R1689) in the `*_as_enacted` tables and for `recitals`; and a per-article diff in `amendments`. Canonical pages: [safelegalai.com/topics/eu-ai-act](https://safelegalai.com/topics/eu-ai-act) · pipeline and issues: [https://github.com/SafeLegalAI/eu-ai-act-structured](https://github.com/SafeLegalAI/eu-ai-act-structured).
 
 ## Tables
 
@@ -85,6 +89,7 @@ Built 2026-09-06 by [SafeLegalAI](https://safelegalai.com) (Cognesio LLP) from t
 | `milestones` | 43 | one dated milestone: entry into force, staged application, transitional dates, Commission deadlines — with legislative status (`past`, `scheduled`, `proposed`, `deferred`) and official source |
 | `authorities` | 29 | one national competent authority under Article 70, per Member State, with role and designation status |
 | `penalties` | 9 | one fine tier from Articles 99–101: conduct, maximum fixed amount, turnover percentage, rule |
+| `member_states` | 147 | **one national implementation instrument** for each of the 27 Member States plus NO/IS/LI/CH/GB: implementing act, authority designation (market surveillance, single point of contact, notifying, fundamental-rights), Article 99 penalty regime, Article 57 sandbox status (deadline 2 August 2027), deployer guidance reaching legal practice, position on the Digital Omnibus — original-language title, English title (flagged when translated by us), status, date, ≤25-word quote, gazette/authority source; a state with nothing verifiable carries one `authority-page` row saying what was checked. Page per state: `https://safelegalai.com/regulation/eu-ai-act/<cc>` |
 
 ### Obligations by risk tier
 
@@ -137,7 +142,7 @@ firm = ob.filter(lambda r: r["legal_practice_relevance"] == "high" and "deployer
 
 ## Cite
 
-> SafeLegalAI (Cognesio LLP), "EU AI Act, structured", v0.1.0, 2026-09-06. https://huggingface.co/datasets/safelegalaidata/eu-ai-act-structured — text © European Union, reused under Decision 2011/833/EU; coding CC BY 4.0.
+> SafeLegalAI (Cognesio LLP), "EU AI Act, structured", v0.3.0, 2026-09-07. https://huggingface.co/datasets/safelegalaidata/eu-ai-act-structured — text © European Union, reused under Decision 2011/833/EU; coding CC BY 4.0.
 
 ## Disclaimer and notices
 
@@ -166,12 +171,13 @@ Provided "as is", without warranty of any kind (CC BY 4.0 §5; Apache-2.0 §7). 
     "obligations": 677,
     "milestones": 43,
     "authorities": 29,
-    "penalties": 9
+    "penalties": 9,
+    "member_states": 147
   },
   "reuse": "Commission Decision 2011/833/EU \u2014 attribution: \u00a9 European Union, 1998\u20132026, https://eur-lex.europa.eu",
-  "version": "0.1.0",
-  "built": "2026-09-06",
-  "contentSha256": "b4079940bf79adea9b61d04b33e257f1e8b5ad4d206a4f978ad97aaf802b430f",
+  "version": "0.3.0",
+  "built": "2026-09-07",
+  "contentSha256": "ed5ec8bb7470ce9ed32bd73e33e60e9f5ab744812497f34b21e866ff47fac25d",
   "canonical": "https://safelegalai.com/topics/eu-ai-act",
   "repository": "https://github.com/SafeLegalAI/eu-ai-act-structured",
   "license_text": "Commission Decision 2011/833/EU (\u00a9 European Union)",
