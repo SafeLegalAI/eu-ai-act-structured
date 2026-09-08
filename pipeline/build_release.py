@@ -211,7 +211,7 @@ firm = ob.filter(lambda r: r["legal_practice_relevance"] == "high" and "deployer
 
 ## Disclaimer and notices
 
-Provided "as is", without warranty of any kind (CC BY 4.0 §5; Apache-2.0 §7). Not legal advice; Cognesio LLP is not a law firm. Only the Official Journal text of Regulation (EU) 2024/1689 is authentic; this dataset may lag amendments and corrigenda. Every coding column is SafeLegalAI's good-faith reading of the text for comparison — not an interpretation of the law you may rely on, and not a statement of how any authority will apply it. Application dates follow Article 113 as written unless the `milestones` table records an amending act published in the Official Journal; check `milestones` before relying on a date. Names of institutions and authorities identify them only. Full terms, notice-and-takedown and governing law (England and Wales): https://safelegalai.com/disclaimer · repository DISCLAIMER.md.
+Provided "as is", without warranty of any kind (CC BY 4.0 §5; Apache-2.0 §7). Not legal advice; Cognesio LLP is not a law firm. Only the Official Journal text of Regulation (EU) 2024/1689 is authentic; this dataset may lag amendments and corrigenda. Every coding column is SafeLegalAI's good-faith reading of the text for comparison — not an interpretation of the law you may rely on, and not a statement of how any authority will apply it. Application dates follow Article 113 as written unless the `milestones` table records an amending act published in the Official Journal; check `milestones` before relying on a date. Names of institutions and authorities identify them only. Full terms and notice-and-takedown: https://safelegalai.com/disclaimer · repository DISCLAIMER.md.
 
 ## Manifest
 
