@@ -71,6 +71,8 @@ configs:
 
 # EU AI Act, structured
 
+> Part of the [SafeLegalAI datasets](https://safelegalai.com/datasets) — CC BY 4.0, mirrored on [Hugging Face](https://huggingface.co/datasets/safelegalaidata/eu-ai-act-structured). Every row links to its record page and its primary source. Found an error in a row? [Open an issue](https://github.com/SafeLegalAI/eu-ai-act-structured/issues/new?template=row-error.yml) or use [safelegalai.com/report](https://safelegalai.com/report).
+
 **Regulation (EU) 2024/1689 (the Artificial Intelligence Act) as tables: every article, recital, annex and definition, 677 obligations coded by actor, risk tier, application date and penalty basis, plus milestones, national competent authorities and fine tiers.**
 
 Built 2026-09-07 by [SafeLegalAI](https://safelegalai.com) (Cognesio LLP) from the official English texts served by the Publications Office of the European Union (Cellar): the **consolidated text as of 27 July 2026** (CELEX 02024R1689-20260727 — the Act as amended by Regulation (EU) 2026/1744, the *Digital Omnibus on AI*, in force 27 July 2026) for `articles`, `definitions`, `annexes` and the coding; the text as enacted (CELEX 32024R1689) in the `*_as_enacted` tables and for `recitals`; and a per-article diff in `amendments`. Canonical pages: [safelegalai.com/topics/eu-ai-act](https://safelegalai.com/topics/eu-ai-act) · pipeline and issues: [https://github.com/SafeLegalAI/eu-ai-act-structured](https://github.com/SafeLegalAI/eu-ai-act-structured).
