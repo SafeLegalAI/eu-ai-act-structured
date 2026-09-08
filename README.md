@@ -71,11 +71,9 @@ configs:
 
 # EU AI Act, structured
 
-> Part of the [SafeLegalAI datasets](https://safelegalai.com/datasets) — CC BY 4.0, mirrored on [Hugging Face](https://huggingface.co/datasets/safelegalaidata/eu-ai-act-structured). Every row links to its record page and its primary source. Found an error in a row? [Open an issue](https://github.com/SafeLegalAI/eu-ai-act-structured/issues/new?template=row-error.yml) or use [safelegalai.com/report](https://safelegalai.com/report).
-
 **Regulation (EU) 2024/1689 (the Artificial Intelligence Act) as tables: every article, recital, annex and definition, 677 obligations coded by actor, risk tier, application date and penalty basis, plus milestones, national competent authorities and fine tiers.**
 
-Built 2026-09-07 by [SafeLegalAI](https://safelegalai.com) (Cognesio LLP) from the official English texts served by the Publications Office of the European Union (Cellar): the **consolidated text as of 27 July 2026** (CELEX 02024R1689-20260727 — the Act as amended by Regulation (EU) 2026/1744, the *Digital Omnibus on AI*, in force 27 July 2026) for `articles`, `definitions`, `annexes` and the coding; the text as enacted (CELEX 32024R1689) in the `*_as_enacted` tables and for `recitals`; and a per-article diff in `amendments`. Canonical pages: [safelegalai.com/topics/eu-ai-act](https://safelegalai.com/topics/eu-ai-act) · pipeline and issues: [https://github.com/SafeLegalAI/eu-ai-act-structured](https://github.com/SafeLegalAI/eu-ai-act-structured).
+Built 2026-09-08 by [SafeLegalAI](https://safelegalai.com) (Cognesio LLP) from the official English texts served by the Publications Office of the European Union (Cellar): the **consolidated text as of 27 July 2026** (CELEX 02024R1689-20260727 — the Act as amended by Regulation (EU) 2026/1744, the *Digital Omnibus on AI*, in force 27 July 2026) for `articles`, `definitions`, `annexes` and the coding; the text as enacted (CELEX 32024R1689) in the `*_as_enacted` tables and for `recitals`; and a per-article diff in `amendments`. Canonical pages: [safelegalai.com/topics/eu-ai-act](https://safelegalai.com/topics/eu-ai-act) · pipeline and issues: [https://github.com/SafeLegalAI/eu-ai-act-structured](https://github.com/SafeLegalAI/eu-ai-act-structured).
 
 ## Tables
 
@@ -142,9 +140,26 @@ ob = load_dataset("safelegalaidata/eu-ai-act-structured", "obligations")["train"
 firm = ob.filter(lambda r: r["legal_practice_relevance"] == "high" and "deployer" in r["actor"])
 ```
 
+## Uses
+
+**Suited to:** counting and comparing what the record shows (by court, jurisdiction, date, actor, outcome, status); building watch-lists and alerts from `source_url`/`fetched_at`; grounding retrieval or summarisation on cited primary documents; teaching and library guides that need a dated, sourced list.
+
+**Not suited to:** ranking products, people or courts; inferring prevalence beyond what a court or regulator has itself stated; any use that treats a coding column as a finding of fact or law. Where a row names a person or organisation it does so as they appear in a public document; anyone named may request a correction or right of reply at https://safelegalai.com/report.
+
 ## Cite
 
-> SafeLegalAI (Cognesio LLP), "EU AI Act, structured", v0.3.0, 2026-09-07. https://huggingface.co/datasets/safelegalaidata/eu-ai-act-structured — text © European Union, reused under Decision 2011/833/EU; coding CC BY 4.0.
+> SafeLegalAI (Cognesio LLP), "EU AI Act, structured", v0.3.0, 2026-09-08. https://huggingface.co/datasets/safelegalaidata/eu-ai-act-structured — text © European Union, reused under Decision 2011/833/EU; coding CC BY 4.0.
+
+```bibtex
+@dataset{safelegalai_eu_ai_act_structured_0_3_0,
+  title        = {EU AI Act, structured},
+  author       = {{SafeLegalAI (Cognesio LLP)}},
+  year         = {2026},
+  version      = {0.3.0},
+  url          = {https://huggingface.co/datasets/safelegalaidata/eu-ai-act-structured},
+  note         = {Data CC BY 4.0. Built 2026-09-08. Canonical: https://safelegalai.com}
+}
+```
 
 ## Disclaimer and notices
 
@@ -178,7 +193,7 @@ Provided "as is", without warranty of any kind (CC BY 4.0 §5; Apache-2.0 §7). 
   },
   "reuse": "Commission Decision 2011/833/EU \u2014 attribution: \u00a9 European Union, 1998\u20132026, https://eur-lex.europa.eu",
   "version": "0.3.0",
-  "built": "2026-09-07",
+  "built": "2026-09-08",
   "contentSha256": "ed5ec8bb7470ce9ed32bd73e33e60e9f5ab744812497f34b21e866ff47fac25d",
   "canonical": "https://safelegalai.com/topics/eu-ai-act",
   "repository": "https://github.com/SafeLegalAI/eu-ai-act-structured",
